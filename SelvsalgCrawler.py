@@ -48,9 +48,9 @@ def get_apartment(section_url):
     	print residence.adress
     	m.update(residence.description)
     	hashOfDescription = m.digest()
-    	#if not d.has_key(hashOfDescription):
-    	#	d[hashOfDescription] = residence
-    	#	sendEmail(residence)
+    	if not d.has_key(hashOfDescription):
+    		d[hashOfDescription] = residence
+    		sendEmail(residence)
     return residence_cards
 
 def sendEmail(residence):
