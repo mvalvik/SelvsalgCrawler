@@ -3,6 +3,7 @@
 from bs4 import BeautifulSoup
 from urllib2 import urlopen
 from HTMLParser import HTMLParser
+import time
 import sys
 import shelve
 import hashlib
@@ -23,16 +24,17 @@ def get_apartment(section_url):
     d = shelve.open('database.db')
     html = urlopen(section_url).read()
     soup = BeautifulSoup(html, "lxml")
-    residence_cards = soup.select(".section-recent .properties-grid .property-card")
-
+    residence_cards = soup.select(".properties-grid .property-card")
+    
     residences = []
 
     for residence_card in residence_cards:
     	res = Residence()
     	res.type = str(residence_card.select(".ribbon")[0].contents[0])
     	res.price = str(residence_card.select("td.price")[0].contents[0]).replace(',', '').replace('.','').replace('-','')
-    	res.ydelse = str(residence_card.select("td.hidden-xs")[0].contents[0])
     	res.description = str(residence_card.select("h6 a")[0].contents[0])
+        res.ydelse = str(residence_card.select("td.hidden-xs")[0].contents[0])
+    	
     	res.link = str(section_url + residence_card.select("h6 a")[0].attrs['href'])
     	res.adress = str(residence_card.select(".polaroid p")[0].contents[0])
     	print res
@@ -70,5 +72,4 @@ def sendEmail(residence):
 	server.sendmail('selvsalg@valvik.dk',cfg.selvsalg['emailReceiver'], message)
 	server.quit()
 	print 'email sent'
-
-get_apartment("http://www.selvsalg.dk")
+get_apartment("http://www.selvsalg.dk/resultater?since=" + time.strftime("%Y-%m-%d") + "&view=grid")
